@@ -10,12 +10,12 @@ macro(set_common_plugin_options _PROJECT_NAME)
 
   string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 
+  option(${_PROJECT_NAME}_BUILD_SHARED_LIBS
+    "BUILD_SHARED_LIBS: Use .so/.dll" ${BUILD_SHARED_LIBS})
+
   if(BUILD_SHARED_LIBS AND (ENABLE_MSAN OR ENABLE_TSAN OR ENABLE_ASAN OR ENABLE_UBSAN))
     message(STATUS "sanitizers require static linking. Disable BUILD_SHARED_LIBS.")
   endif()
-
-  option(${_PROJECT_NAME}_BUILD_SHARED_LIBS
-    "BUILD_SHARED_LIBS: Use .so/.dll" ${BUILD_SHARED_LIBS})
 
   # used by https://docs.conan.io/en/latest/developing_packages/workspaces.html
   get_filename_component(LOCAL_BUILD_ABSOLUTE_ROOT_PATH
