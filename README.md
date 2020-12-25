@@ -1,6 +1,6 @@
 # About
 
-The python_requires feature is a very convenient way to share files and code between different recipes. 
+The python_requires feature is a very convenient way to share files and code between different recipes.
 
 See:
 - https://manu343726.github.io/2018-11-17-conan-common-recipes/
@@ -29,4 +29,7 @@ CONAN_LOGGING_LEVEL=10 \
 GIT_SSL_NO_VERIFY=true \
     cmake -E time \
       conan create . conan/stable
+
+# clean build cache
+conan remove "*" --build --force
 ```
