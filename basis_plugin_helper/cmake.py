@@ -252,7 +252,7 @@ class CMakePackage(ConanFile, RequireScm):
 
         if self._is_tests_enabled():
             self.requires("catch2/[>=2.1.0]@bincrafters/stable")
-            self.requires("conan_gtest/release-1.10.0@conan/stable")
+            self.requires("conan_gtest/stable@conan/stable")
             self.build_requires("FakeIt/[>=2.0.5]@gasuketsu/stable")
 
     def plugin_requirements(self):
@@ -276,7 +276,7 @@ class CMakePackage(ConanFile, RequireScm):
         self.requires("chromium_build_util/master@conan/stable")
 
         # see use_test_support option in base
-        self.requires("chromium_libxml/master@conan/stable")
+        self.requires("chromium_libxml/b73d9be6d6d07a37371854a766eee67e683e3d59@conan/stable")
 
         self.requires("chromium_base/master@conan/stable")
 
