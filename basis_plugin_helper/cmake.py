@@ -314,6 +314,19 @@ class CMakePackage(ConanFile, RequireScm):
     def _is_tests_enabled(self):
       return self._environ_option("ENABLE_TESTS", default = 'true')
 
+    # Use to ensure that you do not package
+    # credentials, certs, '.git', tests, etc.
+    def rmdir_if_packaged(self, dir_path):
+        # Make sure we do not package dir_path
+        tools.rmdir(os.path.join(self.package_folder, dir_path))
+        tools.rmdir(os.path.join(self.build_folder, dir_path))
+
+    def copy_conanfile_for_editable_package(self, dst_path = "."):
+        # Local build
+        # see https://docs.conan.io/en/latest/developing_packages/editable_packages.html
+        if not self.in_local_cache:
+            self.copy("conanfile.py", dst=dst_path, keep_path=False)
+
     def add_cmake_option(self, cmake, var_name, value):
         value_str = "{}".format(value)
         var_value = "ON" if bool(strtobool(value_str.lower())) else "OFF"
@@ -334,21 +347,13 @@ class CMakePackage(ConanFile, RequireScm):
         if not self.options.enable_valgrind:
             cmake.definitions["ENABLE_VALGRIND"] = 'OFF'
 
-        cmake.definitions["ENABLE_UBSAN"] = 'ON'
-        if not self.options.enable_ubsan:
-            cmake.definitions["ENABLE_UBSAN"] = 'OFF'
+        cmake.definitions["ENABLE_UBSAN"] = "ON" if self.options.enable_ubsan else "OFF"
 
-        cmake.definitions["ENABLE_ASAN"] = 'ON'
-        if not self.options.enable_asan:
-            cmake.definitions["ENABLE_ASAN"] = 'OFF'
+        cmake.definitions["ENABLE_ASAN"] = "ON" if self.options.enable_asan else "OFF"
 
-        cmake.definitions["ENABLE_MSAN"] = 'ON'
-        if not self.options.enable_msan:
-            cmake.definitions["ENABLE_MSAN"] = 'OFF'
+        cmake.definitions["ENABLE_MSAN"] = "ON" if self.options.enable_msan else "OFF"
 
-        cmake.definitions["ENABLE_TSAN"] = 'ON'
-        if not self.options.enable_tsan:
-            cmake.definitions["ENABLE_TSAN"] = 'OFF'
+        cmake.definitions["ENABLE_TSAN"] = "ON" if self.options.enable_tsan else "OFF"
 
         cmake.definitions["CONAN_AUTO_INSTALL"] = 'OFF'
 
@@ -392,10 +397,12 @@ class CMakePackage(ConanFile, RequireScm):
     def plugin_package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self.plugin_source_subfolder)
 
-        # Local build
-        # see https://docs.conan.io/en/latest/developing_packages/editable_packages.html
-        if not self.in_local_cache:
-            self.copy("conanfile.py", dst=".", keep_path=False)
+        self.copy_conanfile_for_editable_package(".")
+
+        self.rmdir_if_packaged('.git')
+        self.rmdir_if_packaged('tests')
+        self.rmdir_if_packaged('lib/tests')
+        self.rmdir_if_packaged('lib/pkgconfig')
 
     def plugin_build(self, cmake):
         if self.settings.compiler == 'gcc':
