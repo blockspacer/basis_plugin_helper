@@ -264,7 +264,7 @@ class CMakePackage(ConanFile, RequireScm):
 
         self.requires("basis/master@conan/stable")
 
-        self.requires("boost/1.71.0@dev/stable")
+        self.requires("boost/1.72.0@dev/stable")
 
         self.requires("corrade/v2020.06@conan/stable")
 
